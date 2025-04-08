@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="vaskeapp.MainController"
+            prefWidth="600" prefHeight="400">
+    
+    <top>
+        <HBox spacing="10" padding="10">
+            <Label text="Nytt navn:"/>
+            <TextField fx:id="navnField"/>
+            <Button text="Legg til person" onAction="#handleLeggTilPerson"/>
+        </HBox>
+    </top>
+    
+    <center>
+        <VBox spacing="10" padding="10">
+            <Label text="Velg person for oppvask (1 poeng):"/>
+            <HBox spacing="10">
+                <ChoiceBox fx:id="personChoiceOppvask"/>
+                <Button text="Registrer oppvask" onAction="#handleRegistrerOppvask"/>
+            </HBox>
+
+            <Separator/>
+
+            <Label text="Velg ansvarsområde (Badet, Kjøkken etc.):"/>
+            <HBox spacing="10">
+                <ChoiceBox fx:id="ansvarChoice"/>
+                <Button text="Registrer vask" onAction="#handleRegistrerVask"/>
+            </HBox>
+            
+            <Separator/>
+
+            <Button text="Vis Scoreboard" onAction="#handleVisScoreboard"/>
+            <TextArea fx:id="outputArea" prefRowCount="8" wrapText="true"/>
+        </VBox>
+    </center>
+    
+    <bottom>
+        <HBox spacing="10" padding="10">
+            <Button text="Lagre til fil" onAction="#handleLagre"/>
+            <Button text="Last fra fil" onAction="#handleLast"/>
+        </HBox>
+    </bottom>
+</BorderPane>

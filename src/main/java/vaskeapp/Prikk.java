@@ -16,4 +16,9 @@ public class Prikk {
         return LocalDate.now().isAfter(treMndEtter);
     }
     
+    @Override
+    public String toString() {
+        return "Prikk (" + årsak + ") gitt " + dato;
+    }
+    
 }
