@@ -29,14 +29,15 @@ public class Person {
     }
 
     private boolean isValidNavn(String navn){
-        if (navn == null || navn.isEmpty()){
-            return false;
-        }
-        return navn.matches("[\\p{L}\\s]+");
+        return navn != null && !navn.isEmpty() && navn.matches("[\\p{L}\\s]+");
     }
 
     public void addPrikker(String årsak){
         prikker.add(new Prikk(årsak));
+        int prikkCount = getAntallPrikker();
+        if (prikkCount > 5) {
+            System.out.println(navn + " har fått over 5 prikker -> 500 kr bot!");
+        }
     }
 
     public int getAntallPrikker() {
@@ -48,5 +49,8 @@ public class Person {
         }
         return i;
     }
+    public void removeExpiredPrikker() {
+        prikker.removeIf(Prikk::erUtløpt);
+    }    
 
 }

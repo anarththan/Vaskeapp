@@ -6,17 +6,17 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class VaskeApp extends Application {
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/vaskeapp/MainView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("OppstartView.fxml"));
         Scene scene = new Scene(loader.load());
-        
-        primaryStage.setTitle("VaskeApp");
+
+        primaryStage.setTitle("VaskeApp - Oppstart");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }

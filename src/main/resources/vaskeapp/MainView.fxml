@@ -1,47 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="vaskeapp.MainController"
-            prefWidth="600" prefHeight="400">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vaskeapp.MainController">
     
-    <top>
-        <HBox spacing="10" padding="10">
-            <Label text="Nytt navn:"/>
-            <TextField fx:id="navnField"/>
-            <Button text="Legg til person" onAction="#handleLeggTilPerson"/>
-        </HBox>
-    </top>
+        <children>
+            <!-- Person 1-raden -->
+            <Label fx:id="navnLabel1" layoutX="20.0" layoutY="60.0" text="Navn1" />
+            <ChoiceBox fx:id="actionBox1" layoutX="100.0" layoutY="56.0" prefWidth="100.0" />
+            <TextField fx:id="datoField1" layoutX="210.0" layoutY="56.0" prefWidth="80.0" />
+            <Button layoutX="300.0" layoutY="55.0" onAction="#handleBekreft1" text="Bekreft" />
+            <Label fx:id="prikkLabel1" layoutX="380.0" layoutY="60.0" text="Prikker: 0" />
+            <Label fx:id="sisteVaskLabel1" layoutX="480.0" layoutY="60.0" text="Siste: ..." />
     
-    <center>
-        <VBox spacing="10" padding="10">
-            <Label text="Velg person for oppvask (1 poeng):"/>
-            <HBox spacing="10">
-                <ChoiceBox fx:id="personChoiceOppvask"/>
-                <Button text="Registrer oppvask" onAction="#handleRegistrerOppvask"/>
-            </HBox>
-
-            <Separator/>
-
-            <Label text="Velg ansvarsområde (Badet, Kjøkken etc.):"/>
-            <HBox spacing="10">
-                <ChoiceBox fx:id="ansvarChoice"/>
-                <Button text="Registrer vask" onAction="#handleRegistrerVask"/>
-            </HBox>
-            
-            <Separator/>
-
-            <Button text="Vis Scoreboard" onAction="#handleVisScoreboard"/>
-            <TextArea fx:id="outputArea" prefRowCount="8" wrapText="true"/>
-        </VBox>
-    </center>
+            <!-- Person 2-raden -->
+            <Label fx:id="navnLabel2" layoutX="20.0" layoutY="100.0" text="Navn2" />
+            <ChoiceBox fx:id="actionBox2" layoutX="100.0" layoutY="96.0" prefWidth="100.0" />
+            <TextField fx:id="datoField2" layoutX="210.0" layoutY="96.0" prefWidth="80.0" />
+            <Button layoutX="300.0" layoutY="95.0" onAction="#handleBekreft2" text="Bekreft" />
+            <Label fx:id="prikkLabel2" layoutX="380.0" layoutY="100.0" text="Prikker: 0" />
+            <Label fx:id="sisteVaskLabel2" layoutX="480.0" layoutY="100.0" text="Siste: ..." />
     
-    <bottom>
-        <HBox spacing="10" padding="10">
-            <Button text="Lagre til fil" onAction="#handleLagre"/>
-            <Button text="Last fra fil" onAction="#handleLast"/>
-        </HBox>
-    </bottom>
-</BorderPane>
+            <!-- Person 3-raden -->
+            <Label fx:id="navnLabel3" layoutX="20.0" layoutY="140.0" text="Navn3" />
+            <ChoiceBox fx:id="actionBox3" layoutX="100.0" layoutY="136.0" prefWidth="100.0" />
+            <TextField fx:id="datoField3" layoutX="210.0" layoutY="136.0" prefWidth="80.0" />
+            <Button layoutX="300.0" layoutY="135.0" onAction="#handleBekreft3" text="Bekreft" />
+            <Label fx:id="prikkLabel3" layoutX="380.0" layoutY="140.0" text="Prikker: 0" />
+            <Label fx:id="sisteVaskLabel3" layoutX="480.0" layoutY="140.0" text="Siste: ..." />
+    
+            <!-- Person 4-raden -->
+            <Label fx:id="navnLabel4" layoutX="20.0" layoutY="180.0" text="Navn4" />
+            <ChoiceBox fx:id="actionBox4" layoutX="100.0" layoutY="176.0" prefWidth="100.0" />
+            <TextField fx:id="datoField4" layoutX="210.0" layoutY="176.0" prefWidth="80.0" />
+            <Button layoutX="300.0" layoutY="175.0" onAction="#handleBekreft4" text="Bekreft" />
+            <Label fx:id="prikkLabel4" layoutX="380.0" layoutY="180.0" text="Prikker: 0" />
+            <Label fx:id="sisteVaskLabel4" layoutX="480.0" layoutY="180.0" text="Siste: ..." />
+    
+            <!-- Scoreboard-område -->
+            <Label layoutX="20.0" layoutY="230.0" text="ScoreBoard:" />
+            <TextArea fx:id="scoreboardArea" editable="false" layoutX="20.0" layoutY="250.0" prefHeight="130.0" prefWidth="373.0" />
+
+            <!--Lagre/last-->
+            <Button layoutX="431.0" layoutY="257.0" mnemonicParsing="false" onAction="#handleLagre" prefHeight="26.0" prefWidth="121.0" text="Lagre" />
+            <Button layoutX="431.0" layoutY="289.0" mnemonicParsing="false" onAction="#handleLast" prefHeight="26.0" prefWidth="121.0" text="Last" />
+        </children>
+    </AnchorPane>

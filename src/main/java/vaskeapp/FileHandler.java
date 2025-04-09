@@ -11,64 +11,115 @@ import java.util.List;
 
 public class FileHandler {
     private static final String BASE_DIR = "data/";
+    private static final String OPPVASK_FIL = BASE_DIR + "oppvask.txt";
     private static final String PRIKK_FIL = BASE_DIR + "prikker.txt";
     private static final String POENG_FIL = BASE_DIR + "poeng.txt";
     private static final String VASK_FIL = BASE_DIR + "sistevask.txt";
-    
+
     // ----------------------------------------------------
-    // PRIKKER - LAGRING
+    // OPPVASK
     // ----------------------------------------------------
-    public static void skrivPrikker(List<Person> personListe) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PRIKK_FIL))) {
-            for (Person p : personListe) {
-                String linje = p.getName() + ";" + p.getAntallPrikker();
-                writer.write(linje);
+    public static void skrivOppvask(List<Oppvask> oppvaskListe) {
+        lagDir();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(OPPVASK_FIL))) {
+            for (Oppvask opp : oppvaskListe) {
+                Person p = opp.getPerson();
+                if (p == null) continue;
+                List<LocalDate> datoer = opp.getOppvaskdatoer();
+                StringBuilder sb = new StringBuilder();
+                sb.append(p.getName()).append(";").append(datoer.size());
+                for (LocalDate d : datoer) {
+                    sb.append(";").append(d.toString());
+                }
+                writer.write(sb.toString());
                 writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    // Eksempel på å lese *bare* antall prikker, men ikke deres årsaker/datoer
-    public static void lesPrikker(List<Person> personListe) {
-        File f = new File(PRIKK_FIL);
-        if (!f.exists()) {
-            System.out.println("Ingen " + PRIKK_FIL + " funnet, hopper over...");
-            return;
-        }
+
+    public static void lesOppvask(List<Oppvask> oppvaskListe, List<Person> personListe) {
+        oppvaskListe.clear();
+        File f = new File(OPPVASK_FIL);
+        if (!f.exists()) return;
         try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
             String linje;
             while ((linje = reader.readLine()) != null) {
-                // Format: navn;antallPrikker
+                String[] deler = linje.split(";");
+                if (deler.length < 2) continue;
+                String personNavn = deler[0];
+                int antDatoer = Integer.parseInt(deler[1]);
+                Person p = finnPerson(personNavn, personListe);
+                if (p == null) {
+                    p = new Person(personNavn);
+                    personListe.add(p);
+                }
+                Oppvask opp = new Oppvask(p);
+                int idx = 2;
+                for (int i = 0; i < antDatoer; i++) {
+                    LocalDate d = LocalDate.parse(deler[idx]);
+                    opp.leggTilOppvaskDato(d);
+                    idx++;
+                }
+                oppvaskListe.add(opp);
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------
+    // PRIKKER
+    // ----------------------------------------------------
+    public static void skrivPrikker(List<Person> personListe) {
+        lagDir();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PRIKK_FIL))) {
+            for (Person p : personListe) {
+                // Lagre kun antall "gyldige" prikker
+                writer.write(p.getName() + ";" + p.getAntallPrikker());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void lesPrikker(List<Person> personListe) {
+        File f = new File(PRIKK_FIL);
+        if (!f.exists()) return;
+        try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+            String linje;
+            while ((linje = reader.readLine()) != null) {
                 String[] deler = linje.split(";");
                 if (deler.length < 2) continue;
                 String navn = deler[0];
                 int ant = Integer.parseInt(deler[1]);
-                
-                Person person = finnPerson(navn, personListe);
-                if (person != null) {
-                    // Legg til "ant" prikker
-                    for (int i = 0; i < ant; i++) {
-                        person.addPrikker("Lastet fra fil");
-                    }
+                Person p = finnPerson(navn, personListe);
+                if (p == null) {
+                    p = new Person(navn);
+                    personListe.add(p);
+                }
+                // Legg til "ant" prikker (uten spesifikk årsak)
+                for (int i = 0; i < ant; i++) {
+                    p.addPrikker("Lastet fra fil");
                 }
             }
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
     }
-    
+
     // ----------------------------------------------------
-    // POENG / SCOREBOARD
+    // SCOREBOARD
     // ----------------------------------------------------
-    public static void skrivScoreboard(ScoreBoard scoreboard, List<Person> personListe) {
+    public static void skrivScoreboard(ScoreBoard sb, List<Person> personListe) {
+        lagDir();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(POENG_FIL))) {
             for (Person p : personListe) {
-                int poeng = scoreboard.getPoeng(p);
+                int poeng = sb.getPoeng(p);
                 if (poeng > 0) {
-                    String linje = p.getName() + ";" + poeng;
-                    writer.write(linje);
+                    writer.write(p.getName() + ";" + poeng);
                     writer.newLine();
                 }
             }
@@ -76,114 +127,106 @@ public class FileHandler {
             e.printStackTrace();
         }
     }
-    
-    public static void lesScoreboard(ScoreBoard scoreboard, List<Person> personListe) {
+
+    public static void lesScoreboard(ScoreBoard sb, List<Person> personListe) {
         File f = new File(POENG_FIL);
-        if (!f.exists()) {
-            System.out.println("Ingen " + POENG_FIL + " funnet, hopper over...");
-            return;
-        }
+        if (!f.exists()) return;
         try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
             String linje;
             while ((linje = reader.readLine()) != null) {
-                // Format: navn;poeng
                 String[] deler = linje.split(";");
                 if (deler.length < 2) continue;
                 String navn = deler[0];
-                int poeng = Integer.parseInt(deler[1]);
-                
-                Person person = finnPerson(navn, personListe);
-                if (person != null) {
-                    scoreboard.leggTilPoeng(person, poeng);
+                int pts = Integer.parseInt(deler[1]);
+                Person p = finnPerson(navn, personListe);
+                if (p == null) {
+                    p = new Person(navn);
+                    personListe.add(p);
                 }
+                sb.leggTilPoeng(p, pts);
             }
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
     }
-    
+
     // ----------------------------------------------------
-    // SISTE VASK - ANSVARSOMRÅDER
+    // SISTE VASK
     // ----------------------------------------------------
     public static void skrivSisteVask(List<Ansvarsomrader> omrader) {
+        lagDir();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(VASK_FIL))) {
-            for (Ansvarsomrader o : omrader) {
-                String type = o.getClass().getSimpleName();
-                String ansvarlig = o.getAnsvarlig().getName();
-                String siste = o.getSisteVask().toString();
-                String frist = o.getFristForNesteVask().toString();
-                
-                String linje = type + ";" + ansvarlig + ";" + siste + ";" + frist;
-                writer.write(linje);
+            for (Ansvarsomrader ao : omrader) {
+                String type = ao.getClass().getSimpleName();
+                String navn = ao.getAnsvarlig().getName();
+                String siste = (ao.getSisteVask() == null) ? "null" : ao.getSisteVask().toString();
+                String frist = (ao.getFristForNesteVask() == null) ? "null" : ao.getFristForNesteVask().toString();
+                writer.write(type + ";" + navn + ";" + siste + ";" + frist);
                 writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     public static void lesSisteVask(List<Ansvarsomrader> omrader, List<Person> personListe) {
         File f = new File(VASK_FIL);
-        if (!f.exists()) {
-            System.out.println("Ingen " + VASK_FIL + " funnet, hopper over...");
-            return;
-        }
-        // NB: For en "full" løsning trenger vi å mappe type -> constructor
-        // Her må du enten ha en "fabrikk" for Badet, Kjøkken etc.
-        // Vi viser *et* eksempel på å gjenopprette data.
-        
-        // For enkelhet henter vi kun ut data og oppdaterer eksisterende omrader.
-        // (dvs. at du *allerede* har opprettet 4 omrader i minne)
-        
+        if (!f.exists()) return;
         try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
             String linje;
             while ((linje = reader.readLine()) != null) {
-                // Format: type;navn;SisteVask;Frist
                 String[] deler = linje.split(";");
                 if (deler.length < 4) continue;
                 String type = deler[0];
                 String navn = deler[1];
                 String sisteStr = deler[2];
                 String fristStr = deler[3];
-                
-                // Finn person
                 Person p = finnPerson(navn, personListe);
                 if (p == null) {
                     p = new Person(navn);
                     personListe.add(p);
                 }
-                
-                // Finn omr. i "omrader" av riktig type
-                // (Helt forenklet: tar *første* vi finner av gitt type)
-                for (Ansvarsomrader område : omrader) {
-                    if (område.getClass().getSimpleName().equals(type)) {
-                        // Oppdater
-                        område.setAnsvarlig(p);
-                        // Oppdater sisteVask/frist
-                        // Men i AbstractAnsvarsOmrade er feltene beskyttet 
-                        // => cast:
-                        if (område instanceof AbstractAnsvarsOmrade ao) {
-                            ao.sisteVask = LocalDate.parse(sisteStr);
-                            ao.fristForNesteVask = LocalDate.parse(fristStr);
+                for (Ansvarsomrader ao : omrader) {
+                    if (ao.getClass().getSimpleName().equals(type)) {
+                        ao.setAnsvarlig(p);
+                        if (!sisteStr.equals("null")) {
+                            LocalDate sd = LocalDate.parse(sisteStr);
+                            // Cast:
+                            if (ao instanceof AbstractAnsvarsOmrade abs) {
+                                abs.sisteVask = sd;
+                            }
                         }
-                        break; // fant en, går videre
+                        if (!fristStr.equals("null")) {
+                            LocalDate fd = LocalDate.parse(fristStr);
+                            if (ao instanceof AbstractAnsvarsOmrade abs) {
+                                abs.fristForNesteVask = fd;
+                            }
+                        }
+                        break;
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
     }
-    
+
     // ----------------------------------------------------
-    // HJELPEMETODE
+    // HJELPEMETODER
     // ----------------------------------------------------
-    private static Person finnPerson(String navn, List<Person> liste) {
-        for (Person p : liste) {
+    private static Person finnPerson(String navn, List<Person> pliste) {
+        for (Person p : pliste) {
             if (p.getName().equalsIgnoreCase(navn)) {
                 return p;
             }
         }
         return null;
+    }
+
+    private static void lagDir() {
+        File dir = new File(BASE_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
     }
 }
