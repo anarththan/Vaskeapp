@@ -16,9 +16,6 @@ public class FileHandler {
     private static final String POENG_FIL = BASE_DIR + "poeng.txt";
     private static final String VASK_FIL = BASE_DIR + "sistevask.txt";
 
-    // ----------------------------------------------------
-    // OPPVASK
-    // ----------------------------------------------------
     public static void skrivOppvask(List<Oppvask> oppvaskListe) {
         lagDir();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(OPPVASK_FIL))) {
@@ -69,9 +66,6 @@ public class FileHandler {
         }
     }
 
-    // ----------------------------------------------------
-    // PRIKKER
-    // ----------------------------------------------------
     public static void skrivPrikker(List<Person> personListe) {
         lagDir();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PRIKK_FIL))) {
@@ -100,7 +94,7 @@ public class FileHandler {
                     p = new Person(navn);
                     personListe.add(p);
                 }
-                // Legg til "ant" prikker (uten spesifikk årsak)
+
                 for (int i = 0; i < ant; i++) {
                     p.addPrikker("Lastet fra fil");
                 }
@@ -110,9 +104,6 @@ public class FileHandler {
         }
     }
 
-    // ----------------------------------------------------
-    // SCOREBOARD
-    // ----------------------------------------------------
     public static void skrivScoreboard(ScoreBoard sb, List<Person> personListe) {
         lagDir();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(POENG_FIL))) {
@@ -149,10 +140,6 @@ public class FileHandler {
             e.printStackTrace();
         }
     }
-
-    // ----------------------------------------------------
-    // SISTE VASK
-    // ----------------------------------------------------
     public static void skrivSisteVask(List<Ansvarsomrader> omrader) {
         lagDir();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(VASK_FIL))) {
@@ -191,7 +178,6 @@ public class FileHandler {
                         ao.setAnsvarlig(p);
                         if (!sisteStr.equals("null")) {
                             LocalDate sd = LocalDate.parse(sisteStr);
-                            // Cast:
                             if (ao instanceof AbstractAnsvarsOmrade abs) {
                                 abs.sisteVask = sd;
                             }
@@ -211,9 +197,7 @@ public class FileHandler {
         }
     }
 
-    // ----------------------------------------------------
-    // HJELPEMETODER
-    // ----------------------------------------------------
+
     private static Person finnPerson(String navn, List<Person> pliste) {
         for (Person p : pliste) {
             if (p.getName().equalsIgnoreCase(navn)) {

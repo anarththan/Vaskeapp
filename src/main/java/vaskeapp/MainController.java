@@ -24,7 +24,7 @@ public class MainController {
 
     // Data i minnet
     private List<Person> personListe;
-    private List<Ansvarsomrader> omrader;  // (Badet, Kjøkken, Gangen, Stua)
+    private List<Ansvarsomrader> omrader;
     private ScoreBoard scoreboard;
     private List<Oppvask> oppvaskListe;
 
@@ -36,7 +36,6 @@ public class MainController {
         this.scoreboard = DataStore.scoreboard;
         this.oppvaskListe = DataStore.oppvaskListe;
 
-        // Sett opp ChoiceBoxes med "Oppvask" / "Ansvarsområde"
         List<String> actions = Arrays.asList("Oppvask", "Ansvarsområde");
         actionBox1.getItems().addAll(actions);
         actionBox2.getItems().addAll(actions);
@@ -116,7 +115,6 @@ public class MainController {
             scoreboard.leggTilPoeng(p, 5);
         }
 
-        // Oppdater rad
         updateRow(index, prikkLabel, sisteVaskLabel);
         updateScoreboard();
     }
@@ -128,7 +126,6 @@ public class MainController {
         int prikker = pers.getAntallPrikker();
         prikkLabel.setText("Prikker: " + prikker);
 
-        // Hent siste vask fra ansvarsområdet
         if (ao.getSisteVask() != null) {
             sisteVaskLabel.setText("Siste: " + ao.getSisteVask().toString());
         } else {
@@ -147,9 +144,7 @@ public class MainController {
         scoreboardArea.setText(sb.toString());
     }
 
-    // ----------------------------------------------------
-    // Lagring/Lesing
-    // ----------------------------------------------------
+
     @FXML
     private void handleLagre() {
         FileHandler.skrivPrikker(personListe);
@@ -167,7 +162,6 @@ public class MainController {
         FileHandler.lesOppvask(oppvaskListe, personListe);
         FileHandler.lesSisteVask(omrader, personListe);
 
-        // Oppdater GUI
         updateRow(0, prikkLabel1, sisteVaskLabel1);
         updateRow(1, prikkLabel2, sisteVaskLabel2);
         updateRow(2, prikkLabel3, sisteVaskLabel3);
